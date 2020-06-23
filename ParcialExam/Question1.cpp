@@ -17,10 +17,10 @@ template<typename T>
 class pila {
 	nodo<T> *top = nullptr;
 public:
-	bool vacio(); //indica si la pila est� vac�a
-	void push(T elemento); //agrega un elemento
-	T pop(); //retirua un elemento y devuelve su valor
-	void print(); //imprime el contenido de la pila
+	bool vacio();           //indica si la pila esta vacia
+	void push(T elemento);  //agrega un elemento
+	T pop();                //retira un elemento y devuelve su valor
+	void print();           //imprime el contenido de la pila
 	~pila();
 };
 
