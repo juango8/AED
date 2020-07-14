@@ -13,7 +13,7 @@ struct nodo {
     nodo *next;
     nodo *before;
 
-    nodo(T _valor, nodo *_next = nullptr, nodo *_before = nullptr) {
+    explicit nodo(T _valor, nodo *_next = nullptr, nodo *_before = nullptr) {
         valor = _valor;
         next = _next;
         before = _before;
@@ -29,20 +29,17 @@ public:
     bool vacio();           //indica si la pila esta vacia
     void push(T elemento);  //agrega un elemento
     T pop();                //retira un elemento y devuelve su valor
-    void print();           //imprime el contenido de la pila
+    [[maybe_unused]] void print();           //imprime el contenido de la pila
     ~pila();
 };
 
 template<typename T>
 bool pila<T>::vacio() {
-    if (top)
-        return false;
-    else
-        return true;
+    return top == nullptr;
 }
 
 template<typename T>
-void pila<T>::print() {
+[[maybe_unused]] void pila<T>::print() {
     nodo<T> *tmp = top;
     cout << "cima" << endl;
     for (; tmp; tmp = tmp->next)
@@ -54,10 +51,10 @@ template<typename T>
 void pila<T>::push(T elemento) {
     //TO DO
     if (vacio()) {
-        nodo<T> *temp = new nodo<T>(elemento);
+        auto *temp = new nodo<T>(elemento);
         this->top = temp;
     } else {
-        nodo<T> *temp = new nodo<T>(elemento, this->top);
+        auto *temp = new nodo<T>(elemento, this->top);
         this->top->before = temp;
         this->top = temp;
     }
@@ -284,7 +281,7 @@ public:
         cout << endl;
     }
 
-    void Level() {
+    void Level() const {
         pila<Tupla *> stackStates;
         int level = 0;
         stackStates.push(new Tupla(this->root, level));

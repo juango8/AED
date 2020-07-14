@@ -25,7 +25,7 @@ public:
     bool vacio();           //indica si la pila esta vacia
     void push(T elemento);  //agrega un elemento
     T pop();                //retira un elemento y devuelve su valor
-    void print();           //imprime el contenido de la pila
+    [[maybe_unused]] void print();           //imprime el contenido de la pila
     ~pila();
 };
 
@@ -38,7 +38,7 @@ bool pila<T>::vacio() {
 }
 
 template<typename T>
-void pila<T>::print() {
+[[maybe_unused]] void pila<T>::print() {
     nodo<T> *tmp = top;
     cout << "cima" << endl;
     for (; tmp; tmp = tmp->next)
