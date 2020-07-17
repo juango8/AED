@@ -1,5 +1,5 @@
 //
-// Created by juango on 23/06/20.
+// Created by juango on 14/07/20.
 //
 
 #include <iostream>
@@ -26,74 +26,59 @@ class pila {
 public:
     friend class BTree;
 
-    bool vacio();           //indica si la pila esta vacia
-    void push(T elemento);  //agrega un elemento
-    T pop();                //retira un elemento y devuelve su valor
-    [[maybe_unused]] void print();           //imprime el contenido de la pila
-    ~pila();
+    //indica si la pila esta vacia
+    bool vacio() {
+        return top == nullptr;
+    }
+
+    //agrega un elemento
+    void push(T elemento) {
+        if (vacio()) {
+            auto *temp = new nodo<T>(elemento);
+            this->top = temp;
+        } else {
+            auto *temp = new nodo<T>(elemento, this->top);
+            this->top->before = temp;
+            this->top = temp;
+        }
+    }
+
+    //retira un elemento y devuelve su valor
+    T pop() {
+        if (!vacio()) {
+            nodo<T> *temp = this->top;
+            this->top->next->before = nullptr;
+            this->top = this->top->next;
+            temp->next = nullptr;
+            return temp->valor;
+        }
+        return NULL;
+    }
+
+    ~pila() {
+        nodo<T> *current = this->top;
+        while (current != nullptr) {
+            nodo<T> *temp = current->next;
+            delete current;
+            current = temp;
+        }
+        this->top = nullptr;
+    }
 };
-
-template<typename T>
-bool pila<T>::vacio() {
-    return top == nullptr;
-}
-
-template<typename T>
-[[maybe_unused]] void pila<T>::print() {
-    nodo<T> *tmp = top;
-    cout << "cima" << endl;
-    for (; tmp; tmp = tmp->next)
-        cout << tmp->valor << endl;
-    cout << "base" << endl;
-}
-
-template<typename T>
-void pila<T>::push(T elemento) {
-    //TO DO
-    if (vacio()) {
-        auto *temp = new nodo<T>(elemento);
-        this->top = temp;
-    } else {
-        auto *temp = new nodo<T>(elemento, this->top);
-        this->top->before = temp;
-        this->top = temp;
-    }
-}
-
-template<typename T>
-T pila<T>::pop() {
-    //TO DO
-    if (!vacio()) {
-        nodo<T> *temp = this->top;
-        this->top->next->before = nullptr;
-        this->top = this->top->next;
-        temp->next = nullptr;
-        return temp->valor;
-    }
-    return NULL;
-}
-
-template<typename T>
-pila<T>::~pila() {
-    //TO DO;
-    nodo<T> *current = this->top;
-    while (current != nullptr) {
-        nodo<T> *temp = current->next;
-        delete current;
-        current = temp;
-    }
-    this->top = nullptr;
-}
 
 class Node {
 public:
     int date;
     Node *nodes[2]{};
+    Node *parent;
+    int height;
 
     explicit Node(int date) {
         this->date = date;
         nodes[0] = nullptr;
         nodes[1] = nullptr;
+        this->parent = nullptr;
+        this->height = 0;
     }
 };
 
@@ -155,16 +140,17 @@ public:
         return p;
     }
 
-    bool find(int x, Node **&p) {
-        p = &(this->root);
-        while (*p && (*p)->date != x)
-            p = &((*p)->nodes[(*p)->date < x]);
+    bool find(int x, Node **&p, Node **&parent) {
+        for (p = &(this->root); *p and (*p)->date != x; p = &((*p)->nodes[(*p)->date < x])){
+            parent = p;
+        }
         return *p != nullptr;
     }
 
     bool remove(int x) {
         Node **p;
-        if (!find(x, p))
+        Node **parent;
+        if (!find(x, p, parent))
             return false;
         if ((*p)->nodes[0] && (*p)->nodes[1]) {
             Node **q = rep(p);
@@ -179,9 +165,12 @@ public:
 
     bool insert(int x) {
         Node **p;
-        if (find(x, p))
+        Node **parent = nullptr;
+        if (find(x, p, parent))
             return false;
         *p = new Node(x);
+        if (parent)
+            (*p)->parent = (*parent);
         return true;
     }
 
@@ -316,7 +305,7 @@ public:
         string asd;
         for (; tmp; tmp = tmp->next) {
             if (levelTemp == tmp->valor->state) {
-                asd.erase(0, pow(2, (level - tmp->valor->state-1)) - 1);
+                asd.erase(0, pow(2, (level - tmp->valor->state - 1)) - 1);
                 asd = "\n" + asd;
                 asd = string(pow(2, (level - tmp->valor->state)) - 1, ' ') + asd;
                 levelTemp--;
